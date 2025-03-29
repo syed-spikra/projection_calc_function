@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { calculateProjectMetrics } from './calculations.js';
-import {createUsersTable} from './schema.js';
+// import {createUsersTable} from './schema.js';
 const app = express();
 const port = 3000;
 
@@ -105,5 +105,5 @@ app.post('/signup-save-project', (req, res) => {
 // Start the server
 app.listen(port, () => {
   console.log(`Server listening at http://0.0.0.0:${port}`);
-  createUsersTable();
+  // createUsersTable();
 });
