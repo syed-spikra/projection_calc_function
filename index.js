@@ -46,7 +46,7 @@ app.use(express.json());
 
 
 app.get('/',(req,res)=>{
-    console.log("server started and connection working..");
+    // console.log("server started and connection working..");
     const message ={
         message: 'hello there..'
     }
@@ -55,10 +55,10 @@ app.get('/',(req,res)=>{
 
 app.post('/process-project-data', async(req, res) => {
   const receivedData = req.body;
-  console.log('Received data from frontend:', receivedData);
+  // console.log('Received data from frontend:', receivedData);
 
   const outputData = await calculateProjectMetrics(receivedData);
-  console.log(JSON.stringify(outputData, null, 2));
+  // console.log(JSON.stringify(outputData, null, 2));
   // --- Your Data Processing Logic Goes Here ---
   const result = {
     message: 'Data received and processed successfully!',
@@ -99,11 +99,11 @@ app.post('/signup-save-project', (req, res) => {
     projects: [projectDetails] // Assuming each user can have multiple projects
   };
   users.push(newUser);
-  console.log('New user created:', newUser);
+  // console.log('New user created:', newUser);
   res.status(201).json({ message: 'Signup successful and project data saved.', user: { id: newUser.id, fullname: newUser.fullname, email: newUser.email } });
 });
 // Start the server
 app.listen(port, () => {
-  console.log(`Server listening at http://0.0.0.0:${port}`);
+  // console.log(`Server listening at http://0.0.0.0:${port}`);
   // createUsersTable();
 });
