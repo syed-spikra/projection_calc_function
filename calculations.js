@@ -15,7 +15,7 @@ export function calculateProjectMetrics(inputData) {
     // 2. Projected duration
     let projectedDuration = totalProjectHours / teamDailyCapacity;
     projectedDuration = projectedDuration.toFixed(1);
-    // alert(projectedDuration);
+    console.log(projectedDuration);
     // 3. Projected end date
     const projectedDurationDays = Math.ceil(projectedDuration);
   let projectedEndDate;
@@ -70,7 +70,7 @@ export function calculateProjectMetrics(inputData) {
   
     // 5. Revenue breakdown json
     const memberRevenueBreakdown = teamMembers.map(member => {
-      const billableHours = ((member.hours_day).toFixed(1) * projectedDurationDays.toFixed(1)) * (member.billable_ratio / 100);
+      const billableHours = ((member.hours_day * projectedDurationDays) * (member.billable_ratio / 100)).toFixed(1);
       // const billableHours = totalProjectHours * (member.billable_ratio / 100);
       const revenue = member.billable_rate * billableHours;
       return {
