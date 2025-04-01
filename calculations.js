@@ -87,7 +87,7 @@ export function calculateProjectMetrics(inputData) {
     const totalRevenue = memberRevenueBreakdown.reduce((sum, member) => sum + member.revenue, 0);
   
     // 6. main_revenue
-    const expectedProfitRevenue = teamCosts / (1 - profitTarget / 100);
+    const expectedProfitRevenue = teamCosts / (1 - (profitTarget / 100));
     const mainRevenue = expectedProfitRevenue > totalRevenue ? expectedProfitRevenue : totalRevenue;
   
     // 7. profitorloss
