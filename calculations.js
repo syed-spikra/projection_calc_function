@@ -69,7 +69,8 @@ export function calculateProjectMetrics(inputData) {
   
     // 5. Revenue breakdown json
     const memberRevenueBreakdown = teamMembers.map(member => {
-      const billableHours = totalProjectHours * (member.billable_ratio / 100);
+      const billableHours = (member.hours_day * projectedDurationDays) * (member.billable_ratio / 100);
+      // const billableHours = totalProjectHours * (member.billable_ratio / 100);
       const revenue = member.billable_rate * billableHours;
       return {
         id: member.id,
