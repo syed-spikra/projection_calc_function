@@ -15,7 +15,7 @@ export function calculateProjectMetrics(inputData) {
     // 2. Projected duration
     let projectedDuration = totalProjectHours / teamDailyCapacity;
     projectedDuration = projectedDuration.toFixed(1);
-    console.log(projectedDuration);
+    // console.log(projectedDuration);
     // 3. Projected end date
     const projectedDurationDays = Math.ceil(projectedDuration);
   let projectedEndDate;
