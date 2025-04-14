@@ -1,5 +1,5 @@
 // controllers/userController.js
-import {UserModel,projectModel} from '../models/schema.js';
+import {UserModel,projectModel,membersModel} from '../models/schema.js';
 import crypto from 'crypto';
 import Razorpay from 'razorpay';
 import dotenv from 'dotenv';
@@ -42,6 +42,21 @@ const calcCreateUser = async (req,res)=>{
         // const outputData = await calculateProjectMetrics(receivedData);
         // console formatting
         // console.log(JSON.stringify(receivedData, null, 2));
+        let membersListArr = receivedData?.projectDetails?.projectInput?.teamMembers.map(member => ({
+          memberid: member.id,
+          memberName: member.name,
+          memberRole: member.role,
+          memberDepartment: member.department,
+          memberCostperhrs: member.cost_rate
+        }));
+        let membersReq = {
+          userDetails: {
+            fullname: receivedData.fullname,
+            email: receivedData.email,
+            password: receivedData.password,
+        },
+        memberslist: membersListArr
+        }
         let newProject = await projectModel({
             userDetails: {
                 fullname: receivedData.fullname,
@@ -56,7 +71,12 @@ const calcCreateUser = async (req,res)=>{
             },
             
         });
+        let memberres = await update_R_createmembers(membersReq);
+        if(memberres == "success"){
+
+        }
         let savedProject = await newProject.save();
+        // let savedMembers = await newMemebrs.upsert();
         let result = {
             message: 'Data received and processed successfully!',
             result_response: savedProject,
@@ -67,6 +87,43 @@ const calcCreateUser = async (req,res)=>{
         res.status(500).json({ message: 'Server Error' });
     }
 };
+const update_R_createmembers = async(membersListData)=>{    
+    try {
+      const { userDetails, memberslist } = membersListData;
+      const existsUserMembers = await membersModel.findOne({ 'userDetails.email': userDetails.email });
+  
+      if (existsUserMembers) {
+        const existingMembers = existsUserMembers.memberslist;
+        for (const newMember of memberslist) {
+          const existingMemberIndex = existingMembers.findIndex(
+            (member) => member.memberName === newMember.memberName && member.memberid === newMember.memberid
+          );
+  
+          if (existingMemberIndex > -1) {
+            existsUserMembers.memberslist[existingMemberIndex] = { ...existsUserMembers.memberslist[existingMemberIndex].toObject(), ...newMember };
+          } else {
+            existsUserMembers.memberslist.push(newMember);
+          }
+        }
+        await existsUserMembers.save();
+        return "success";
+        // return res.status(200).json({ message: 'Member details updated/inserted successfully for existing user.' });
+  
+      } else {
+        const newUser = new membersModel({
+          userDetails: userDetails,
+          memberslist: memberslist,
+        });
+        await newUser.save();
+        return "success";
+        // return res.status(201).json({ message: 'New user and member details created successfully.' });
+      }
+    } catch (error) {
+      console.error('Error updating/inserting members:', error);
+      return "failure";
+      // return res.status(500).json({ error: 'Failed to update/insert member details.' });
+    }
+  }
 
 const genOutput = async(req,res)=>{
     try {
@@ -148,7 +205,7 @@ const confirmPayment = async(req,res)=>{
 const  getuserprojects = async(req,res)=>{
     
     let userEmail = req.params.email;
-    console.log(userEmail);
+    // console.log(userEmail);
     try {
         const projects = await projectModel.find({ 'userDetails.email': userEmail });
         res.status(200).json(projects);
@@ -158,7 +215,18 @@ const  getuserprojects = async(req,res)=>{
     }
 }
 
-export { createUser, calcCreateUser, genOutput, createOrder, confirmPayment,getuserprojects};
+const getusermembers = async(req,res)=>{
+  let userEmail = req.params.email;
+  try{
+    const allmembers = await membersModel.find({ 'userDetails.email': userEmail });
+    res.status(200).json(allmembers);
+  }catch(error){
+    console.error('Error fetching members list:', error);
+    res.status(500).json({ error: 'Failed to fetch members list.' });
+  }
+}
+
+export { createUser, calcCreateUser, genOutput, createOrder, confirmPayment, getuserprojects, getusermembers };
 
 // Alternatively, if you intend to export only this function as the main export:
 // export default createUser;

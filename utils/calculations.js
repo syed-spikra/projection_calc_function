@@ -1,4 +1,4 @@
-export function calculateProjectMetrics(inputData) {
+export async function calculateProjectMetrics(inputData) {
     const {
       startDate,
       workHours,

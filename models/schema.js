@@ -81,13 +81,30 @@ const projectInputSchema = new mongoose.Schema({
         projectinput  : projectInputSchema,
         projectoutput : projectOutputSchema,
     },
-  })
+  });
 
+  const memberSchema = new mongoose.Schema({
+    memberid:{type:String},
+    memberName: {type:String},
+    memberRole:{type:String},
+    memberDepartment: {type:String},
+    memberCostperhrs: {type:Number},
+    memberEmail: {type:String}
+  })
+  const userallMembersSchema = new mongoose.Schema({
+    userDetails: {
+      fullname: {type:String},
+      email: {type:String},
+      password: {type:String},
+    },
+    memberslist:[memberSchema]
+  });
 
 // module.exports = mongoose.model('modelname', userSchema, 'collectionname');
 const UserModel = mongoose.model('userleads',userSchema);
 const projectModel = mongoose.model('userprojects',projectSchema);
+const membersModel = mongoose.model('usermembers',userallMembersSchema);
 
-export  {UserModel,projectModel};
+export  {UserModel,projectModel,membersModel};
 
 // export default {UserModel};
