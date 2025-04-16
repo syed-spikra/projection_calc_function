@@ -72,9 +72,6 @@ const calcCreateUser = async (req,res)=>{
             
         });
         let memberres = await update_R_createmembers(membersReq);
-        if(memberres == "success"){
-
-        }
         let savedProject = await newProject.save();
         // let savedMembers = await newMemebrs.upsert();
         let result = {
@@ -87,11 +84,10 @@ const calcCreateUser = async (req,res)=>{
         res.status(500).json({ message: 'Server Error' });
     }
 };
-const update_R_createmembers = async(membersListData)=>{    
+const update_R_createmembers = async(membersListData)=>{
     try {
       const { userDetails, memberslist } = membersListData;
-      const existsUserMembers = await membersModel.findOne({ 'userDetails.email': userDetails.email });
-  
+      const existsUserMembers = await membersModel.findOne({'userDetails.email': userDetails.email});
       if (existsUserMembers) {
         const existingMembers = existsUserMembers.memberslist;
         for (const newMember of memberslist) {
@@ -100,7 +96,7 @@ const update_R_createmembers = async(membersListData)=>{
           );
   
           if (existingMemberIndex > -1) {
-            existsUserMembers.memberslist[existingMemberIndex] = { ...existsUserMembers.memberslist[existingMemberIndex].toObject(), ...newMember };
+            existsUserMembers.memberslist[existingMemberIndex] = {...existsUserMembers.memberslist[existingMemberIndex].toObject(), ...newMember };
           } else {
             existsUserMembers.memberslist.push(newMember);
           }
@@ -203,7 +199,6 @@ const confirmPayment = async(req,res)=>{
 }
 
 const  getuserprojects = async(req,res)=>{
-    
     let userEmail = req.params.email;
     // console.log(userEmail);
     try {
@@ -226,7 +221,96 @@ const getusermembers = async(req,res)=>{
   }
 }
 
-export { createUser, calcCreateUser, genOutput, createOrder, confirmPayment, getuserprojects, getusermembers };
+
+const deletemember = async(req,res)=>{
+  let userEmail = req.params.email;
+  const { memberName, memberRole, memberDepartment, memberCostperhrs } = req.body;
+  console.log({ memberName, memberRole, memberDepartment, memberCostperhrs });
+  try {
+    const userDocument = await membersModel.findOneAndUpdate(
+      { 'userDetails.email': userEmail },
+      {
+        $pull: {
+          memberslist: {
+            memberName: memberName,
+            memberRole: memberRole,
+            memberDepartment: memberDepartment,
+            memberCostperhrs: parseFloat(memberCostperhrs), // Ensure it's a number for comparison
+          },
+        },
+      },
+      { new: true } // To get the updated document after the update
+    );
+
+    if (!userDocument) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Check if any member was actually removed
+    const memberRemoved = userDocument.memberslist.some(
+      (member) =>
+        member.memberName === memberName &&
+        member.memberRole === memberRole &&
+        member.memberDepartment === memberDepartment &&
+        member.memberCostperhrs === parseFloat(memberCostperhrs)
+    );
+
+    if (memberRemoved) {
+      return res.status(200).json({ message: 'Member not found in the list.' });
+    }
+
+    res.status(200).json({ message: 'Member deleted successfully.', updatedUser: userDocument });
+  } catch (error) {
+    console.error('Error deleting member:', error);
+    res.status(500).json({ error: 'Failed to delete member.'});
+  }
+}
+const addmember = async(req,res)=>{
+  try {
+    let reqdata = req.body;
+    let membersListArr = [{
+      memberid: reqdata.member.id,
+      memberName: reqdata.member.name,
+      memberRole: reqdata.member.role,
+      memberDepartment: reqdata.member.department,
+      memberCostperhrs: reqdata.member.cost_rate}];
+      
+    let membersReq = {
+      userDetails: {
+        fullname: reqdata.fullname,
+        email: reqdata.email,
+        password: reqdata.password,
+    },
+    memberslist: membersListArr
+    }
+    let memberres = await update_R_createmembers(membersReq);
+    if(memberres == "success"){
+      let result = {
+        message: 'member addedd successfully!',
+        result_response: memberres,
+      };
+      res.status(201).json(result);
+    }
+    else{
+      console.error("failure to add");
+      res.status(500).json({ message: 'Server Error' });  
+    } 
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  } 
+}
+
+
+export { createUser,
+  calcCreateUser,
+  genOutput,
+  createOrder,
+  confirmPayment,
+  getuserprojects,
+  getusermembers,
+  deletemember,
+  addmember };
 
 // Alternatively, if you intend to export only this function as the main export:
 // export default createUser;
