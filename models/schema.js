@@ -2,11 +2,11 @@
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-  name: {type: String,required: true},
-  description: {type: String,},
+  username: {type: String},
+  usermail: {type: String,required: true},
+  userpassword: {type:String},
   createdAt: {type: Date,default: Date.now},
 });
-
 
 const teamMemberSchema = new mongoose.Schema({
     id: { type: String, required: true },

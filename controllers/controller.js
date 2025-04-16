@@ -14,20 +14,63 @@ const razorpay = new Razorpay({
   });
 
   
-
-const createUser = async (req, res) => {
+const createuserLead = async (userDetails)=>{
   try {
-    const { name, description } = req.body;
-
-    if (!name) {
-      return res.status(400).json({ message: 'Name is required' });
+    if (!userDetails.email) {
+      return res.status(400).json({ message: 'Email is required' });
     }
     const newUser = new UserModel({
-      name:"syed",
-      description:"saving one entry data",
+      username:userDetails.username,
+      usermail:userDetails.email,
+      userpassword:userDetails.password
     });
     const savedUser = await newUser.save();
-    res.status(201).json(savedUser);
+    if(savedUser)
+      return "Success";
+  } catch (error) {
+    return "failure";
+  }
+}
+const checkLoginUser = async (req,res)=>{
+  const { email } = req.params;
+
+  try {
+    const existingUser = await membersModel.findOne({ 'userDetails.email': email });
+    if (existingUser) {
+      return res.status(200).json({
+        message: 'Exists',
+        userDetails: {
+          fullname: existingUser.userDetails.fullname,
+          email: existingUser.userDetails.email,
+          password: existingUser.userDetails.password,
+        _id: existingUser._id
+        },
+      });
+    } else {
+      return res.status(200).json({ message: 'User does not exist.' });
+      // Or, if this is part of a user creation flow, proceed to create the user:
+      // const newUser = new membersModel(req.body);
+      // await newUser.save();
+      // return res.status(201).json({ message: 'User created successfully.', user: newUser });
+    }
+  } catch (error) {
+    console.error('Error checking user existence:', error);
+    return res.status(500).json({ error: 'Failed to check user existence.' });
+  }
+}
+const createUser = async (req, res) => {
+  try {
+    let userDetails={
+      username: req.body.name,
+      email: req.body.email,
+      password: req.body.password
+    }
+    let usercreateres = await createuserLead(userDetails);
+    let result = {
+      message: 'Data received and processed successfully!',
+      result_response: usercreateres,
+  };
+  res.status(201).json(result);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error' });
@@ -57,6 +100,17 @@ const calcCreateUser = async (req,res)=>{
         },
         memberslist: membersListArr
         }
+
+        const existingUser = await UserModel.findOne({ 'userDetails.email': email });
+        if (!existingUser) {
+          let userdetails = {
+            fullname: receivedData.username,
+            email: receivedData.email,
+            password: receivedData.password,
+          };
+          createuserLead(userdetails);
+        } 
+
         let newProject = await projectModel({
             userDetails: {
                 fullname: receivedData.fullname,
@@ -340,6 +394,7 @@ const addmember = async(req,res)=>{
 
 
 export { createUser,
+  checkLoginUser,
   calcCreateUser,
   genOutput,
   createOrder,
