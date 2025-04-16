@@ -9,11 +9,13 @@ import { createUser,
     getuserprojects,
     getusermembers,
     deletemember,
-    addmember } from '../controllers/controller.js';
+    addmember,
+    updatemember } from '../controllers/controller.js';
 
 router.get('/api/get-user-projects/:email', getuserprojects);
 router.get('/api/get-user-members/:email', getusermembers);
 router.delete('/api/delete-memberfrom/:email', deletemember);
+router.put('/api/edit-memberfrom/:email',updatemember);
 router.post('/api/add-member-foruser', addmember);
 router.post('/api/createuser', createUser);
 router.post('/api/process-project-data', calcCreateUser);

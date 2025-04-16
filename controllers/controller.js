@@ -265,6 +265,43 @@ const deletemember = async(req,res)=>{
     res.status(500).json({ error: 'Failed to delete member.'});
   }
 }
+const updatemember = async(req,res)=>{
+  const userEmail  = req.params.email;
+  const { memberoid, memberName, memberRole, memberDepartment, memberCostperhrs } = req.body;
+
+    try {
+      const userDocument = await membersModel.findOneAndUpdate(
+        { 'userDetails.email': userEmail, 'memberslist._id': memberoid },
+        {
+          $set: {
+            'memberslist.$.memberName': memberName,
+            'memberslist.$.memberRole': memberRole,
+            'memberslist.$.memberDepartment': memberDepartment,
+            'memberslist.$.memberCostperhrs': memberCostperhrs
+          },
+        },
+        { new: true } // To get the updated document after the update
+      );
+  
+      if (!userDocument) {
+        return res.status(404).json({ message: 'User or member not found.' });
+      }
+  
+      // Verify if the member was actually updated (optional, but good for confirmation)
+      const updatedMember = userDocument.memberslist.find(member => member._id.toString() === memberoid);
+      if (!updatedMember ||
+          updatedMember.memberName !== memberName ||
+          updatedMember.memberRole !== memberRole ||
+          updatedMember.memberDepartment !== memberDepartment ||
+          updatedMember.memberCostperhrs !== parseFloat(memberCostperhrs)) {
+        return res.status(400).json({ message: 'Failed to update member.' });
+      }
+      res.status(200).json({ message: 'Member updated successfully.', updatedUser: userDocument });
+    } catch (error) {
+      console.error('Error updating member:', error);
+      res.status(500).json({ error: 'Failed to update member.' });
+    }
+  }
 const addmember = async(req,res)=>{
   try {
     let reqdata = req.body;
@@ -310,7 +347,8 @@ export { createUser,
   getuserprojects,
   getusermembers,
   deletemember,
-  addmember };
+  addmember,
+  updatemember };
 
 // Alternatively, if you intend to export only this function as the main export:
 // export default createUser;
