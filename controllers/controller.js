@@ -43,7 +43,7 @@ const checkLoginUser = async (req,res)=>{
           fullname: existingUser.userDetails.fullname,
           email: existingUser.userDetails.email,
           password: existingUser.userDetails.password,
-        _id: existingUser._id
+          _id: existingUser._id
         },
       });
     } else {
@@ -101,7 +101,7 @@ const calcCreateUser = async (req,res)=>{
         memberslist: membersListArr
         }
 
-        const existingUser = await UserModel.findOne({ 'userDetails.email': receivedData.email });
+        const existingUser = await UserModel.findOne({ 'usermail': receivedData.email });
         if (!existingUser) {
           let userdetails = {
             fullname: receivedData.username,
@@ -111,6 +111,10 @@ const calcCreateUser = async (req,res)=>{
           createuserLead(userdetails);
         } 
 
+        const existingCredits = existingUser.creditcount || 0;
+        console.log("user credit count,==", existingCredits);
+
+        if(existingCredits>=1){
         let newProject = await projectModel({
             userDetails: {
                 fullname: receivedData.fullname,
@@ -128,11 +132,24 @@ const calcCreateUser = async (req,res)=>{
         let memberres = await update_R_createmembers(membersReq);
         let savedProject = await newProject.save();
         // let savedMembers = await newMemebrs.upsert();
+        
+        const newCredits = Math.max(0, existingCredits - 1);
+        const updatedUser = await UserModel.findOneAndUpdate(
+          { usermail: receivedData.email },
+          { $set: { creditcount: newCredits } },
+          { new: true }
+        );
         let result = {
-            message: 'Data received and processed successfully!',
-            result_response: savedProject,
+          message: 'Data received and processed successfully!',
+          result_response: {savedproject:savedProject,
+            savedmember:memberres,
+            creditupdated:updatedUser
+          },
         };
         res.status(201).json(result);
+      }else{
+        res.json({staus:200,message:"0 credit"});
+      }
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server Error' });
@@ -240,7 +257,7 @@ const confirmPayment = async(req,res)=>{
         if (generated_signature === razorpay_signature) {
             // Payment is successful
             // TODO: Update your database to credit 'tokens' to the user
-            console.log(`Payment successful! Credited ${tokens} tokens.`);
+            // console.log(`Payment successful! Credited ${tokens} tokens.`);
             res.json({ success: true, message: `Payment successful! ${tokens} tokens credited.` });
         } else {
             // Payment failed or signature mismatch
@@ -280,7 +297,7 @@ const getusermembers = async(req,res)=>{
 const deletemember = async(req,res)=>{
   let userEmail = req.params.email;
   const { memberName, memberRole, memberDepartment, memberCostperhrs } = req.body;
-  console.log({ memberName, memberRole, memberDepartment, memberCostperhrs });
+  // console.log({ memberName, memberRole, memberDepartment, memberCostperhrs });
   try {
     const userDocument = await membersModel.findOneAndUpdate(
       { 'userDetails.email': userEmail },
@@ -395,33 +412,73 @@ const addmember = async(req,res)=>{
 
 
 const handlewebhook = async(req,res)=>{
-  console.log("=========webhook JSON========");
-  console.log(req.body);
-  console.log("=========:::webhook JSON formated:::========");
+  // console.log("=========webhook JSON========");
+  // console.log(req.body);
 
+  console.log("=========:::webhook JSON formated:::========");
   let whreceivedData = await req.body;
   console.log(JSON.stringify(whreceivedData, null, 2));
 
-
-  console.log("=========:::webhook JSON after validate:::========");
-  // do a validation
+  // console.log("=========:::webhook JSON after validate:::========");
+  const receivedPayData = req.body;
+  // console.log(receivedPayData);
 	const secret = 'astra@projcalc2025';
 	const shasum = crypto.createHmac('sha256', secret)
 	shasum.update(JSON.stringify(req.body))
 	const digest = shasum.digest('hex')
 
-	console.log(digest, req.headers['x-razorpay-signature'])
+	// console.log(digest, req.headers['x-razorpay-signature']);
 
 	if (digest === req.headers['x-razorpay-signature']) {
-		console.log('request is legit');
-		// process it
-		console.log(JSON.stringify(req.body, null, 2));
+		// console.log('request is legit');
+		// console.log(JSON.stringify(req.body, null, 2));
+    if(receivedPayData.event == "payment.captured"){
+      const paydetails = receivedPayData?.payload?.payment?.entity;
+      // console.log(paydetails);
+      let Usrcurr = paydetails.currency;
+      let Usramt = paydetails.amount;
+      // Usramt = Usramt/100;
+      let Usremail = paydetails.email;
+      if((Usrcurr == "USD") && (Usramt == 100)){
+        const user = await UserModel.findOne({ usermail: Usremail });
+        if (!user) {
+          console.log(`User with email ${Usremail} not found.`);
+          // might need to create a new user with 5 credits, if the mail is not matched 
+          // res.status(500).json({ error: 'payment Failed' });
+        }
+        const existingCredits = user.creditcount || 0;
+        const newCredits = existingCredits + 5;
+        const updatedUser = await UserModel.findOneAndUpdate(
+          { usermail: Usremail },
+          { $set: { creditcount: newCredits } },
+          { new: true }
+        );
+        // console.log(`Successfully added 5 credits to user ${userEmail}`);
+        // res.json({status:200,message:"success",creditaddedfor:updatedUser});
+      }
+      else{
+        // console.log("payment failure captured");
+        // res.status(500).json({ error: 'payment Failed' });
+      }
+    }
 	} else {
-		console.log("else pass it..");
+		// console.log("else request is not legit");
 	}
 	res.json({ status: 'ok' });
 }
 
+const  getusertokens = async(req,res)=>{
+  let userEmail = req.params.email;
+  // console.log(userEmail);
+  try {
+    const userDetails = await UserModel.find({ 'usermail': userEmail });
+    let creditCount = userDetails[0].creditcount;
+    res.status(200).json({status:200,message:"Success",creditcount:creditCount});
+  } catch (error) {
+      console.error('Error fetching projects:', error);
+      res.status(500).json({ error: 'Failed to user credits' });
+  }
+}
 const getsample = async (req,res)=>{
   console.log(":::::::::::::::get method called [sample test] :::::::::");
   res.json({ status:'ok',message:'api called here for get sample syed' });
@@ -438,6 +495,7 @@ export { createUser,
   addmember,
   updatemember,
   handlewebhook,
+  getusertokens,
   getsample
  };
 

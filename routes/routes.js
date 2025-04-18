@@ -13,7 +13,8 @@ import { createUser,
     addmember,
     updatemember,
     handlewebhook,
-    getsample } from '../controllers/controller.js';
+    getsample,
+    getusertokens } from '../controllers/controller.js';
 
 router.get('/api/get-user-projects/:email', getuserprojects);
 
@@ -32,6 +33,6 @@ router.post('/api/payment/verify-payment', confirmPayment);
 
 router.get('/api/sampleGETtest', getsample);
 
-router.post('/api/razorpay-webhook', handlewebhook);
-// astra@projcalc2025
+router.post('/api/razorpay-webhook', handlewebhook); // astra@projcalc2025
+router.get('/api/get-tokens-count/:email', getusertokens);
 export default router;
