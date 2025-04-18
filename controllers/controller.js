@@ -101,7 +101,7 @@ const calcCreateUser = async (req,res)=>{
         memberslist: membersListArr
         }
 
-        const existingUser = await UserModel.findOne({ 'userDetails.email': email });
+        const existingUser = await UserModel.findOne({ 'userDetails.email': receivedData.email });
         if (!existingUser) {
           let userdetails = {
             fullname: receivedData.username,
@@ -180,13 +180,14 @@ const genOutput = async(req,res)=>{
         const inputData = await req.body;
         const outputValues = await calculateProjectMetrics(inputData);
         const result = {
-            message: 'Data received and processed successfully!',
+            status: 200,
+            message: 'success',
             processData: outputValues,
         };
-        res.status(201).json(result);
+        res.status(200).json(result);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        res.status(500).json({ message: error });
     }
 }
 
