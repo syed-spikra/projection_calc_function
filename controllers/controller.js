@@ -397,6 +397,10 @@ const addmember = async(req,res)=>{
 const handlewebhook = async(req,res)=>{
   console.log("=========webhook JSON========");
   console.log(req.body);
+  console.log("=========:::webhook JSON formated:::========");
+
+  let whreceivedData = await req.body;
+  console.log(JSON.stringify(whreceivedData, null, 2));
 
   res.json({ status:'ok' });
 }
