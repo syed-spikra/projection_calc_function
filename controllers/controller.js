@@ -402,7 +402,27 @@ const handlewebhook = async(req,res)=>{
   let whreceivedData = await req.body;
   console.log(JSON.stringify(whreceivedData, null, 2));
 
-  res.json({ status:'ok' });
+
+  console.log("=========:::webhook JSON after validate:::========");
+  // do a validation
+	const secret = 'astra@projcalc2025';
+
+	const crypto = require('crypto')
+
+	const shasum = crypto.createHmac('sha256', secret)
+	shasum.update(JSON.stringify(req.body))
+	const digest = shasum.digest('hex')
+
+	console.log(digest, req.headers['x-razorpay-signature'])
+
+	if (digest === req.headers['x-razorpay-signature']) {
+		console.log('request is legit');
+		// process it
+		console.log(JSON.stringify(req.body, null, 2));
+	} else {
+		console.log("else pass it..");
+	}
+	res.json({ status: 'ok' });
 }
 
 const getsample = async (req,res)=>{
