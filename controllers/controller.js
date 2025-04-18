@@ -402,7 +402,8 @@ const handlewebhook = async(req,res)=>{
 }
 
 const getsample = async (req,res)=>{
-  console.log("get method called");
+  console.log(":::::::::::::::get method called [sample test] :::::::::");
+  res.json({ status:'ok',message:'api called here for get sample syed' });
 }
 export { createUser,
   checkLoginUser,
