@@ -394,6 +394,16 @@ const addmember = async(req,res)=>{
 }
 
 
+const handlewebhook = async(req,res)=>{
+  console.log("=========webhook JSON========");
+  console.log(req.body);
+
+  res.json({ status:'ok' });
+}
+
+const getsample = async (req,res)=>{
+  console.log("get method called");
+}
 export { createUser,
   checkLoginUser,
   calcCreateUser,
@@ -404,7 +414,10 @@ export { createUser,
   getusermembers,
   deletemember,
   addmember,
-  updatemember };
+  updatemember,
+  handlewebhook,
+  getsample
+ };
 
 // Alternatively, if you intend to export only this function as the main export:
 // export default createUser;
