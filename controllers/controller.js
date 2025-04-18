@@ -406,9 +406,6 @@ const handlewebhook = async(req,res)=>{
   console.log("=========:::webhook JSON after validate:::========");
   // do a validation
 	const secret = 'astra@projcalc2025';
-
-	const crypto = require('crypto')
-
 	const shasum = crypto.createHmac('sha256', secret)
 	shasum.update(JSON.stringify(req.body))
 	const digest = shasum.digest('hex')
