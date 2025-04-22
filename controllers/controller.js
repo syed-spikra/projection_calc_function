@@ -114,7 +114,7 @@ const calcCreateUser = async (req,res)=>{
         const existingCredits = existingUser.creditcount || 0;
         console.log("user credit count,==", existingCredits);
 
-        if(existingCredits>=1){
+        if(existingCredits>0){
         let newProject = await projectModel({
             userDetails: {
                 fullname: receivedData.fullname,
@@ -133,7 +133,7 @@ const calcCreateUser = async (req,res)=>{
         let savedProject = await newProject.save();
         // let savedMembers = await newMemebrs.upsert();
         
-        const newCredits = Math.max(0, existingCredits - 1);
+        const newCredits = Math.max(0, existingCredits - 0.5);
         const updatedUser = await UserModel.findOneAndUpdate(
           { usermail: receivedData.email },
           { $set: { creditcount: newCredits } },
@@ -447,7 +447,7 @@ const handlewebhook = async(req,res)=>{
           // res.status(500).json({ error: 'payment Failed' });
         }
         const existingCredits = user.creditcount || 0;
-        const newCredits = existingCredits + 5;
+        const newCredits = existingCredits + 1;
         const updatedUser = await UserModel.findOneAndUpdate(
           { usermail: Usremail },
           { $set: { creditcount: newCredits } },
