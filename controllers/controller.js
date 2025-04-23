@@ -35,14 +35,14 @@ const checkLoginUser = async (req,res)=>{
   const { email } = req.params;
 
   try {
-    const existingUser = await membersModel.findOne({ 'userDetails.email': email });
+    const existingUser = await UserModel.findOne({ 'userDetails.email': email });
     if (existingUser) {
       return res.status(200).json({
         message: 'Exists',
         userDetails: {
-          fullname: existingUser.userDetails.fullname,
-          email: existingUser.userDetails.email,
-          password: existingUser.userDetails.password,
+          fullname: existingUser.username,
+          email: existingUser.usermail,
+          password: existingUser.userpassword,
           _id: existingUser._id
         },
       });
