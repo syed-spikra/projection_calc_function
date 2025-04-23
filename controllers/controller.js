@@ -438,7 +438,7 @@ const handlewebhook = async(req,res)=>{
       let Usramt = paydetails.amount;
       // Usramt = Usramt/100;
       let Usremail = paydetails.email;
-      if((Usrcurr == "USD") && (Usramt == 100)){
+      if((Usrcurr == "USD") && (Usramt == 300)){
         const user = await UserModel.findOne({ usermail: Usremail });
         if (!user) {
           console.log(`User with email ${Usremail} not found.`);
@@ -446,7 +446,7 @@ const handlewebhook = async(req,res)=>{
           // res.status(500).json({ error: 'payment Failed' });
         }
         const existingCredits = user.creditcount || 0;
-        const newCredits = existingCredits + 1;
+        const newCredits = existingCredits + 3;
         const updatedUser = await UserModel.findOneAndUpdate(
           { usermail: Usremail },
           { $set: { creditcount: newCredits } },
