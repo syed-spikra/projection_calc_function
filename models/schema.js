@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   username: {type: String},
   usermail: {type: String,required: true},
   userpassword: {type:String},
-  creditcount:{type:Number},
+  creditcount:{type:Number,default:0},
   createdAt: {type: Date,default: Date.now},
 });
 
