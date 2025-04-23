@@ -295,11 +295,11 @@ const getusermembers = async(req,res)=>{
 
 const deletemember = async(req,res)=>{
   let userEmail = req.params.email;
-  const { memberName, memberRole, memberDepartment, memberCostperhrs } = req.body;
+  const {memberoid, memberName, memberRole, memberDepartment, memberCostperhrs } = req.body;
   // console.log({ memberName, memberRole, memberDepartment, memberCostperhrs });
   try {
     const userDocument = await membersModel.findOneAndUpdate(
-      { 'userDetails.email': userEmail },
+      { 'userDetails.email': userEmail,'memberslist._id': memberoid  },
       {
         $pull: {
           memberslist: {
