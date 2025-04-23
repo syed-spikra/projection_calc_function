@@ -33,9 +33,8 @@ const createuserLead = async (userDetails)=>{
 }
 const checkLoginUser = async (req,res)=>{
   const { email } = req.params;
-
   try {
-    const existingUser = await UserModel.findOne({ 'userDetails.email': email });
+    const existingUser = await UserModel.findOne({ 'usermail': email });
     if (existingUser) {
       return res.status(200).json({
         message: 'Exists',
