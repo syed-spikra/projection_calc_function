@@ -3,6 +3,9 @@ import {UserModel,projectModel,membersModel} from '../models/schema.js';
 import crypto from 'crypto';
 import Razorpay from 'razorpay';
 import dotenv from 'dotenv';
+// import google from 'googleapis';
+import GoogleSpreadsheet from 'google-spreadsheet';
+
 dotenv.config();
 
 import { calculateProjectMetrics } from '../utils/calculations.js';
@@ -13,7 +16,25 @@ const razorpay = new Razorpay({
     key_secret: process.env.RAZORPAY_API_KEY_SECRET,
   });
 
-  
+const CREDENTIALS_PATH = '../utils/gsheetcred.json';
+async function addRowToSheet(rowData) {
+  try {
+    let addrow = {
+      Time: new Date().toLocaleString(),
+      Name: rowData.username,
+      Email: rowData.email    
+    }
+    const gdocsheet = new GoogleSpreadsheet(process.env.SPREADSHEET_ID);
+    await gdocsheet.useServiceAccountAuth(require(CREDENTIALS_PATH));
+    await gdocsheet.loadInfo();
+    const sheet = gdocsheet.sheetsByIndex[0];
+    const newRow = await sheet.addRow(addrow);
+    console.log('Row added successfully:', newRow);
+  } catch (error) {
+    console.error('Error adding row:', error);
+  }
+}
+
 const createuserLead = async (userDetails)=>{
   try {
     if (!userDetails.email) {
@@ -25,8 +46,10 @@ const createuserLead = async (userDetails)=>{
       userpassword:userDetails.password
     });
     const savedUser = await newUser.save();
-    if(savedUser)
+    if(savedUser){
+      await addRowToSheet(userDetails);
       return "Success";
+    }
   } catch (error) {
     return "failure";
   }

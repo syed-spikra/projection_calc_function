@@ -1,0 +1,14 @@
+{
+    "type": "service_account",
+    "project_id": "laabam-signups-sheets",
+    "private_key_id": "cf4cc89110d61a04057221c5d8dccec6743fb9e3",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCYrrACMdJ4K+wO\nQUFTYq8D3Q81y2zViDRrsb3+1FpT5yiGLkxAzwbqUri11zYu18du9AwWi+2FiNw0\nTCI5o4wX0xSWM78wBItleOjR6bupv2P0p6ob295padlEAbV27iRm/ODnytVTEUXe\nSpLlZy7BG00y/6AhrYSU3bdcZEK6nAzi0vwZmtyOCll9sPlpHH5iN2DxtD4aJGQq\ngXDqhnbMLrFn6XGWYi96yGvsEFTfZ28cblpwK440Lm2nc0S0L+Wsi+Avaeg3dgK4\nPx3wNFs4oeffOl+rh71YhmyrSPUrIriEUEf/SP/cD4kDgsyXaTLcVoIJihq1KIoL\nwS9WQqjFAgMBAAECggEACJqHZohCMO1gruj0cmt0K0aQrdpZtqqnMY5hg3OZ53J2\nMSF4wIop/JhOukh3UCpunYz5BWg7KTQuHHBR2Wei5FDLry8ZTe5joIMws2t1XLph\nOo8cIdfA77W8PX3PKPWAbaFAVy9x1+14P296WZz34H/WWNJYxq0NdIoN5BHuRK+i\nJigdatZeuAd5eAY4BV1YHbms5kJSDTl82Khz2gymAWAt8b33x1iHkbH+YaZ6tORz\nu/FAfT0umQTX8gOVmJq79pLDpcugYhVQO9RdY9u9jDSLNzQsxgGmQuhpH2qT7Zmu\nyX06+AabS+vJ8Rbqst1jKqNiIExitAJyTxattu9ZHQKBgQDQfIYMlwyA2pZ6im9+\nU9q2SK1F6iWobi9ffzO0/CG6zhgN29aPMliIkkcAvqwUNKxyu7Qy1rbxLTur4gXg\nVP0QqaWSPTnX3E3RstTg9fU9p3j377H8ezMoS9w3XsS9P2UsSmDkxfjY6fB0j8ad\n0Gpm028D6OihUyDKfO086GmlGwKBgQC7enRWzPOYvpmL8G9v4cvD3cy/mb0B+0qf\nuoiNPmx+krLLnqhfSMYAUNzqix9SzZZpHTXK0JaFuLludUGb0Kcue4kxI6nY64DC\nyrp+9Hvhm9Qy2OhCUYFp9oFOnOEnM8qNmc3OB1zQvnjKN+vjybFdMJYyPmcs9uuD\nSA1/G1onnwKBgE7uliG2Hjm6iDYkq0l8ndVddpx9pXw7GxxgoEbpHiwHUvwMOxND\n0FkEaHVTuvp7Zr6ZagPFXsW4hlrw26CvDJB+af0PyRJ8icnWltoExLBu81GLIiug\nySF8dwdPjdTIZ5l5H239tdUJ3MuEk4G0IlSDwAgO6eQKAOQon/jrVPP5AoGAdIUb\nIYeoLtrnW85HtGXF2ypTQxIuIrkoHDY3AHI3xEMw1NT7GJ2GUlPvueZVxYT5YsNA\n15jktJ+mwDwoVstL3Nvy3JOp0KQuFuMhHh6dkA7lx+SAFhfKMy1+GHnwhgjubyuU\neeShjyuSrzwqZBzLG3xDHV8jiRK+NY3mtYUud0kCgYAfoW2+L05eNrytyQhq2A4X\ny98oTsSK9uF+Ys1KzDfljYjPsV7wDDkUOGzaXMne8EVebesWeSimNKtGE4d+VaB/\nmq3UaB0ce/FkY2iyevHx3UB31NN2HRTyTiCKkMwoslomd8EmJP6YtbqtWaktw7yV\n8Dvd1EC4g8kkP5XW1evkmw==\n-----END PRIVATE KEY-----\n",
+    "client_email": "laabam-signups@laabam-signups-sheets.iam.gserviceaccount.com",
+    "client_id": "113200015817597406656",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/laabam-signups%40laabam-signups-sheets.iam.gserviceaccount.com",
+    "universe_domain": "googleapis.com"
+  }
+  
