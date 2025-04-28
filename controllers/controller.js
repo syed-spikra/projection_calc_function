@@ -17,7 +17,7 @@ const razorpay = new Razorpay({
   });
 
 const CREDENTIALS_PATH = '../utils/gsheetcred.json';
-async function addRowToSheet(rowData) {
+const addRowToSheet = async function (rowData) {
   try {
     let addrow = {
       Time: new Date().toLocaleString(),
