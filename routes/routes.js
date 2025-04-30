@@ -14,7 +14,9 @@ import { createUser,
     updatemember,
     handlewebhook,
     getsample,
-    getusertokens } from '../controllers/controller.js';
+    getusertokens,
+    getmembercapacity 
+} from '../controllers/controller.js';
 
 router.get('/api/get-user-projects/:email', getuserprojects);
 
@@ -22,6 +24,8 @@ router.get('/api/get-user-members/:email', getusermembers);
 router.delete('/api/delete-memberfrom/:email', deletemember);
 router.put('/api/edit-memberfrom/:email',updatemember);
 router.post('/api/add-member-foruser', addmember);
+
+router.post('/api/get-all-member-capacity/:email', getmembercapacity);
 
 router.post('/api/createuser', createUser);
 router.get('/api/get-loginuser/:email',checkLoginUser);

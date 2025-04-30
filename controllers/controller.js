@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import { calculateProjectMetrics } from '../utils/calculations.js';
+import { calculateMemberCapacity } from '../utils/capacitycalc.js';
 
 
 const razorpay = new Razorpay({
@@ -77,6 +78,26 @@ const createUser = async (req, res) => {
   }
 };
 
+const getmembercapacity = async (req,res) => {
+  let userEmail = req.params.email;
+  let startTime = await req.body.startTime;
+  let endTime = await req.body.endTime;
+  try{
+    const allmemberslist = await membersModel.find({ 'userDetails.email': userEmail });
+    const allprojectslist = await projectModel.find({ 'userDetails.email': userEmail });
+
+    let memcapacity = await calculateMemberCapacity(allmemberslist,allprojectslist,startTime,endTime);
+    const result = {
+      status: 200,
+      message: 'success',
+      member_capacity: memcapacity,
+    };
+    res.status(200).json(result);
+  }catch(error){
+    console.error('Error fetching members list:', error);
+    res.status(500).json({ error: 'Failed to fetch members capacity.' });
+  }
+}
 
 const calcCreateUser = async (req,res)=>{
     try {
@@ -162,10 +183,12 @@ const update_R_createmembers = async(membersListData)=>{
       if (existsUserMembers) {
         const existingMembers = existsUserMembers.memberslist;
         for (const newMember of memberslist) {
+          // const existingMemberIndex = existingMembers.findIndex(
+          //   (member) => member.memberName === newMember.memberName && member.memberid === newMember.memberid
+          // );
           const existingMemberIndex = existingMembers.findIndex(
-            (member) => member.memberName === newMember.memberName && member.memberid === newMember.memberid
+            (member) => member.memberName === newMember.memberName
           );
-  
           if (existingMemberIndex > -1) {
             existsUserMembers.memberslist[existingMemberIndex] = {...existsUserMembers.memberslist[existingMemberIndex].toObject(), ...newMember };
           } else {
@@ -496,7 +519,8 @@ export { createUser,
   updatemember,
   handlewebhook,
   getusertokens,
-  getsample
+  getsample,
+  getmembercapacity
  };
 
 // Alternatively, if you intend to export only this function as the main export:
