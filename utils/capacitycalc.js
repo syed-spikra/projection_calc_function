@@ -1272,7 +1272,7 @@ export async function calculateMemberCapacity(allmemberslist, allprojectslist, s
                 }
                 let diffhrs = membersCapacity.capacityHours - memberDetails.allocatedHours;
                 memberDetails.availableHours = diffhrs > 0 ? diffhrs : 0;
-                memberDetails.allocation = (membersCapacity.capacityHours > 0) ? parseFloat((memberDetails.allocatedHours / membersCapacity.capacityHours) * 100).toFixed(2) : 0;
+                memberDetails.allocation = (membersCapacity.capacityHours > 0) ? (memberDetails.allocatedHours / membersCapacity.capacityHours) * 100 : 0;
 
                 membersCapacity.memberslist.push(memberDetails);
                 processedMembers.set(member.memberName, true);
