@@ -1162,85 +1162,131 @@
 //       "__v": 0
 //     }
 //   ];
- export async function calculateMemberCapacity(allmemberslist, allprojectslist, startTime, endTime) {
+
+export async function calculateMemberCapacity(allmemberslist, allprojectslist, startTime, endTime) {
+    // Helper function to calculate working days (excluding Saturdays and Sundays)
     function getWorkingDays(startDate, endDate) {
-      let startDateObj = new Date(startDate);
-      let endDateObj = new Date(endDate);
-      let totalDays = 0;
-      let currentDate = new Date(startDateObj);
-  
-      while (currentDate <= endDateObj) {
-        let dayOfWeek = currentDate.getDay();
-        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-          totalDays++;
+        let startDateObj = new Date(startDate);
+        let endDateObj = new Date(endDate);
+        let totalDays = 0;
+        let currentDate = new Date(startDateObj);
+
+        while (currentDate <= endDateObj) {
+            let dayOfWeek = currentDate.getDay();
+            if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                totalDays++;
+            }
+            currentDate.setDate(currentDate.getDate() + 1);
         }
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-      return totalDays;
+        return totalDays;
     }
-  
-    //1. Calculate totaldaysrange
+
+    // Helper function to parse date strings (handles both formats)
+    function parseDateString(dateString) {
+        try {
+            // Try parsing as ISO 8601 (e.g., '2025-04-18T00:00:00.000Z')
+            const parsedDate = new Date(dateString);
+            if (!isNaN(parsedDate.getTime())) {
+                return parsedDate;
+            }
+        } catch (error) {
+            // If ISO 8601 parsing fails, try parsing as YYYY-MM-DD
+            const parts = dateString.split('-');
+            if (parts.length === 3) {
+                const year = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+                const day = parseInt(parts[2], 10);
+                const parsedDate = new Date(year, month, day);
+                if (!isNaN(parsedDate.getTime())) {
+                    return parsedDate;
+                }
+            }
+        }
+        return null; // Return null if parsing fails
+    }
+
+    // 1. Calculate totaldaysrange (overall input range)
     let totaldaysrange = getWorkingDays(startTime, endTime);
-  
-    //2. Calculate maxworkperhrs
+
+    // 2. Calculate maxworkperhrs
     let maxworkperhrs = 0;
     for (let project of allprojectslist) {
-      if (project.projectDetails && project.projectDetails.projectinput && project.projectDetails.projectinput.workHours > maxworkperhrs) {
-        maxworkperhrs = project.projectDetails.projectinput.workHours;
-      }
-    }
-  
-    const membersCapacity = {
-      totaldaysrange: totaldaysrange,
-      maxworkperhrs: maxworkperhrs,
-      capacityHours: totaldaysrange * maxworkperhrs,
-      memberslist: []
-    };
-  
-    const processedMembers = new Map(); // Use a Map to track processed members
-  
-    //3. Loop through each member and calculate project details
-    for (let memberData of allmemberslist) {
-      for (let member of memberData.memberslist) {
-        if (!processedMembers.has(member.memberName)) { // Check if member is already processed
-          let memberDetails = {
-            membername: member.memberName,
-            projectlist: [],
-            allocatedHours: 0,
-            availableHours: 0,
-            allocation: 0
-          };
-  
-          for (let project of allprojectslist) {
-            if (project.projectDetails && project.projectDetails.projectinput && project.projectDetails.projectinput.teamMembers) {
-              for (let teamMember of project.projectDetails.projectinput.teamMembers) {
-                if (teamMember.name === member.memberName) {
-                  let projectAllocationTime = totaldaysrange * teamMember.hours_day;
-                  memberDetails.projectlist.push({
-                    pname: project.projectDetails.projectTitle,
-                    projectallocationtime: projectAllocationTime
-                  });
-                  memberDetails.allocatedHours += projectAllocationTime;
-                }
-              }
-            }
-          }
-  
-          let diffhrs = membersCapacity.capacityHours - memberDetails.allocatedHours;
-          memberDetails.availableHours = diffhrs > 0 ? diffhrs : 0;
-          memberDetails.allocation = (membersCapacity.capacityHours > 0) ? (memberDetails.allocatedHours / membersCapacity.capacityHours) * 100 : 0;
-  
-          membersCapacity.memberslist.push(memberDetails);
-          processedMembers.set(member.memberName, true); // Mark member as processed
+        if (project.projectDetails && project.projectDetails.projectinput && project.projectDetails.projectinput.workHours > maxworkperhrs) {
+            maxworkperhrs = project.projectDetails.projectinput.workHours;
         }
-      }
     }
+
+    const membersCapacity = {
+        totaldaysrange: totaldaysrange,
+        maxworkperhrs: maxworkperhrs,
+        capacityHours: totaldaysrange * maxworkperhrs,
+        memberslist: []
+    };
+
+    const processedMembers = new Map();
+
+    // 3. Loop through members and projects
+    for (let memberData of allmemberslist) {
+        for (let member of memberData.memberslist) {
+            if (!processedMembers.has(member.memberName)) {
+                let memberDetails = {
+                    membername: member.memberName,
+                    projectlist: [],
+                    allocatedHours: 0,
+                    availableHours: 0,
+                    allocation: 0
+                };
+
+                for (let project of allprojectslist) {
+                    if (project.projectDetails && project.projectDetails.projectinput && project.projectDetails.projectinput.teamMembers && project.projectDetails.projectoutput) {
+                        const projectStartDate = parseDateString(project.projectDetails.projectinput.startDate);
+                        const projectEndDate = parseDateString(project.projectDetails.projectoutput.projectedEndDate);
+
+                        if (projectStartDate && projectEndDate) {
+                            const inputStartDate = new Date(startTime);
+                            const inputEndDate = new Date(endTime);
+
+                            let overlapStartDate = projectStartDate >= inputStartDate ? projectStartDate : inputStartDate;
+                            let overlapEndDate = projectEndDate <= inputEndDate ? projectEndDate : inputEndDate;
+
+                            if (overlapStartDate <= overlapEndDate) { // Check for overlap
+                                let projdayscount = getWorkingDays(
+                                    overlapStartDate.toISOString().split('T')[0], // Convert to YYYY-MM-DD
+                                    overlapEndDate.toISOString().split('T')[0]
+                                );
+                                for (let teamMember of project.projectDetails.projectinput.teamMembers) {
+                                    if (teamMember.name === member.memberName) {
+                                        let projectAllocationTime = projdayscount * teamMember.hours_day;
+                                        memberDetails.projectlist.push({
+                                            pname: project.projectDetails.projectTitle,
+                                            projectallocationtime: projectAllocationTime,
+                                            pdayscount: projdayscount,
+                                            pmemhrsday: teamMember.hours_day
+                                        });
+                                        memberDetails.allocatedHours += projectAllocationTime;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                let diffhrs = membersCapacity.capacityHours - memberDetails.allocatedHours;
+                memberDetails.availableHours = diffhrs > 0 ? diffhrs : 0;
+                memberDetails.allocation = (membersCapacity.capacityHours > 0) ? parseFloat((memberDetails.allocatedHours / membersCapacity.capacityHours) * 100).toFixed(2) : 0;
+
+                membersCapacity.memberslist.push(memberDetails);
+                processedMembers.set(member.memberName, true);
+            }
+        }
+    }
+
     return membersCapacity;
-  }
-  
+}
+
+//   =================================================
 //   // Sample Usage (assuming you have startTime and endTime from frontend)
-//   const startTime = "2025-04-28";
-//   const endTime = "2025-04-30";
+//   const startTime = "2025-06-21";
+//   const endTime = "2025-12-15";
   
 //   const result = calculateMemberCapacity(allmemberslist, allprojectslist, startTime, endTime);
 //   console.log(JSON.stringify(result, null, 2));
