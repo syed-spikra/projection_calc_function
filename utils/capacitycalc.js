@@ -1209,12 +1209,15 @@ export async function calculateMemberCapacity(allmemberslist, allprojectslist, s
     let totaldaysrange = getWorkingDays(startTime, endTime);
 
     // 2. Calculate maxworkperhrs
-    let maxworkperhrs = 0;
-    for (let project of allprojectslist) {
-        if (project.projectDetails && project.projectDetails.projectinput && project.projectDetails.projectinput.workHours > maxworkperhrs) {
-            maxworkperhrs = project.projectDetails.projectinput.workHours;
-        }
-    }
+    let maxworkperhrs = 8; //making for default as 8 for work hrs per day
+
+    // loop to check for the max of the work hrs in the existing saved projects,
+    // let maxworkperhrs = 0;
+    // for (let project of allprojectslist) {
+    //     if (project.projectDetails && project.projectDetails.projectinput && project.projectDetails.projectinput.workHours > maxworkperhrs) {
+    //         maxworkperhrs = project.projectDetails.projectinput.workHours;
+    //     }
+    // }
 
     const membersCapacity = {
         totaldaysrange: totaldaysrange,
