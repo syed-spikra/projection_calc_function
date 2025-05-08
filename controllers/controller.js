@@ -305,6 +305,32 @@ const  getuserprojects = async(req,res)=>{
     }
 }
 
+const updateprojectstatus = async (req, res) => {
+  try {
+      const { email, projectTitle, o_id, stausVal } = req.body;
+      const query = {
+          'userDetails.email': email,
+          'projectDetails.projectTitle': projectTitle,
+          _id: o_id
+      };
+      const updatedProject = await projectModel.findOneAndUpdate(
+          query,
+          { $set: { 'projectDetails.projectStatus': stausVal } },
+          { new: true, runValidators: true }
+      ).lean();
+      if (!updatedProject) {
+          return res.status(404).json({
+              error: 'Project not found or not updated',
+              message: 'failure',
+          });
+      }
+      res.json({ message: 'success',status:200,});
+  } catch (error){
+      console.error('Error in updateprojectstatus:', error);
+      res.status(500).json({ error: 'Failed to update project status: ' + error.message });
+  }
+};
+
 const getusermembers = async(req,res)=>{
   let userEmail = req.params.email;
   try{
@@ -315,7 +341,6 @@ const getusermembers = async(req,res)=>{
     res.status(500).json({ error: 'Failed to fetch members list.' });
   }
 }
-
 
 const deletemember = async(req,res)=>{
   let userEmail = req.params.email;
@@ -514,6 +539,29 @@ const getsample = async (req,res)=>{
     
 //   }
 // }
+
+// update exisitng projects with projectstatus field
+// const updateProjectsAndGetDetails = async (req,res)=> {
+//   try {
+//       const updateResult = await projectModel.updateMany(
+//           { 'projectDetails.projectStatus': { $exists: false } },
+//           { $set: { 'projectDetails.projectStatus': 'Scoping' } }
+//       );
+//       const updatedProjects = await projectModel.find({});
+//       const projectNames = updatedProjects.map(project => {
+//           const title = project.projectDetails?.projectTitle;
+//           return title || "Untitled Project";
+//       });
+//       res.json( {
+//           projectNames: projectNames,
+//           updatedCount: updateResult.modifiedCount
+//       });
+//   } catch (error) {
+//       console.error("Error in updateProjectsAndGetDetails:", error);
+//       res.json({ error: 'Failed to update projects: ' + error.message });
+//   }
+// }
+
 export { createUser,
   checkLoginUser,
   calcCreateUser,
@@ -529,6 +577,8 @@ export { createUser,
   getusertokens,
   getsample,
   getmembercapacity,
+  updateprojectstatus,
+  // updateProjectsAndGetDetails
   // checkNgetallusers
  };
 

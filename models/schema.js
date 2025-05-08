@@ -79,6 +79,7 @@ const projectInputSchema = new mongoose.Schema({
     {
         projectTitle:{type:String},
         projectDescription:{type:String},
+        projectStatus:{type:String,default:'Scoping'},
         projectinput  : projectInputSchema,
         projectoutput : projectOutputSchema,
     },

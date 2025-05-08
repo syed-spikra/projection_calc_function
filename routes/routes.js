@@ -16,10 +16,14 @@ import { createUser,
     getsample,
     getusertokens,
     getmembercapacity,
+    updateprojectstatus,
+    // updateProjectsAndGetDetails
     // checkNgetallusers
 } from '../controllers/controller.js';
 
 router.get('/api/get-user-projects/:email', getuserprojects);
+router.post('/api/update-project-staus', updateprojectstatus);
+// router.get('/api/update-allproject-exists-newfield',updateProjectsAndGetDetails);
 
 router.get('/api/get-user-members/:email', getusermembers);
 router.delete('/api/delete-memberfrom/:email', deletemember);
