@@ -506,6 +506,14 @@ const getsample = async (req,res)=>{
   console.log(":::::::::::::::get method called [sample test] :::::::::");
   res.json({ status:'ok',message:'api called here for get sample syed' });
 }
+// const checkNgetallusers = async (req,res)=>{
+//   let reqData = req.body;
+//   try {
+    
+//   } catch (error) {
+    
+//   }
+// }
 export { createUser,
   checkLoginUser,
   calcCreateUser,
@@ -520,7 +528,8 @@ export { createUser,
   handlewebhook,
   getusertokens,
   getsample,
-  getmembercapacity
+  getmembercapacity,
+  // checkNgetallusers
  };
 
 // Alternatively, if you intend to export only this function as the main export:

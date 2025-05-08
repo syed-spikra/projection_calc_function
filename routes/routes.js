@@ -15,7 +15,8 @@ import { createUser,
     handlewebhook,
     getsample,
     getusertokens,
-    getmembercapacity 
+    getmembercapacity,
+    // checkNgetallusers
 } from '../controllers/controller.js';
 
 router.get('/api/get-user-projects/:email', getuserprojects);
@@ -27,6 +28,7 @@ router.post('/api/add-member-foruser', addmember);
 
 router.post('/api/get-all-member-capacity/:email', getmembercapacity);
 
+// router.post('/api/admin/get-all-users', checkNgetallusers);
 router.post('/api/createuser', createUser);
 router.get('/api/get-loginuser/:email',checkLoginUser);
 router.post('/api/process-project-data', calcCreateUser);
