@@ -8,6 +8,7 @@ dotenv.config();
 
 import { calculateProjectMetrics } from '../utils/calculations.js';
 import { calculateMemberCapacity } from '../utils/capacitycalc.js';
+import { calculateCapacityDashboard } from '../utils/memberscapacity.js';
 
 
 const razorpay = new Razorpay({
@@ -98,6 +99,29 @@ const getmembercapacity = async (req,res) => {
     res.status(500).json({ error: 'Failed to fetch members capacity.' });
   }
 }
+
+const getcapacitydashboard = async (req,res) => {
+  let userEmail = req.params.email;
+  let startTime = await req.body.startTime;
+  let endTime = await req.body.endTime;
+  let selDept = await req.body.selectedDepartment;
+  try{
+    // const allmemberslist = await membersModel.find({ 'userDetails.email': userEmail });
+    const allprojectslist = await projectModel.find({ 'userDetails.email': userEmail });
+
+    let capDashres = await calculateCapacityDashboard(startTime,endTime,selDept,allprojectslist);
+    const result = {
+      status: 200,
+      message: 'success',
+      capdash: capDashres,
+    };
+    res.status(200).json(result);
+  }catch(error){
+    console.error('Error fetching capdash:', error);
+    res.status(500).json({error: 'Failed to fetch capacity dashboard.'});
+  }
+}
+
 
 const calcCreateUser = async (req,res)=>{
     try {
@@ -577,6 +601,7 @@ export { createUser,
   getusertokens,
   getsample,
   getmembercapacity,
+  getcapacitydashboard,
   updateprojectstatus,
   // updateProjectsAndGetDetails
   // checkNgetallusers

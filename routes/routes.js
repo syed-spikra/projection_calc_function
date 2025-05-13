@@ -16,6 +16,7 @@ import { createUser,
     getsample,
     getusertokens,
     getmembercapacity,
+    getcapacitydashboard,
     updateprojectstatus,
     // updateProjectsAndGetDetails
     // checkNgetallusers
@@ -31,7 +32,7 @@ router.put('/api/edit-memberfrom/:email',updatemember);
 router.post('/api/add-member-foruser', addmember);
 
 router.post('/api/get-all-member-capacity/:email', getmembercapacity);
-
+router.post('/api/get-capacity-dashboards/:email', getcapacitydashboard);
 // router.post('/api/admin/get-all-users', checkNgetallusers);
 router.post('/api/createuser', createUser);
 router.get('/api/get-loginuser/:email',checkLoginUser);
