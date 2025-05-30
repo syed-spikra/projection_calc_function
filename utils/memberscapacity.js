@@ -1206,12 +1206,15 @@
 //     }
 //   ];
 
-export async function calculateCapacityDashboard(startInput, endInput, selectedDepartments, allprojectslist) {
+export async function calculateCapacityDashboard(startInput, endInput, selectedDepartments, projectStatus, allprojectslist) {
 const WORK_HOURS_PER_DAY = 8;
 const DEFAULT_DEPARTMENTS = ['Engineer', 'Design', 'Product', 'Marketing', 'Others'];
 const startTime = new Date(startInput);
 const endTime = new Date(endInput);
-
+const statusFilterMap = {
+    "Approved": ["Approved"],
+    "Cancelled": ["Cancelled", "Rejected"],
+  };
 // Utilities
 function getBusinessDays(start, end) {
     let count = 0;
@@ -1282,6 +1285,10 @@ const memberAllocMap = {};
 // ==== ProjectTeamMemberCapacityRows ====
 const memberProjectMap = {};
 
+const allowedStatuses = statusFilterMap[projectStatus] || [];
+allprojectslist = allprojectslist.filter(project => 
+  allowedStatuses.includes(project.projectDetails.projectStatus)
+);
 allprojectslist.forEach(project => {
     const input = project.projectDetails.projectinput;
     const output = project.projectDetails.projectoutput;

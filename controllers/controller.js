@@ -105,11 +105,12 @@ const getcapacitydashboard = async (req,res) => {
   let startTime = await req.body.startTime;
   let endTime = await req.body.endTime;
   let selDept = await req.body.selectedDepartment;
+  let projectStatus = await req.body.selectedStatus;
   try{
     // const allmemberslist = await membersModel.find({ 'userDetails.email': userEmail });
     const allprojectslist = await projectModel.find({ 'userDetails.email': userEmail });
 
-    let capDashres = await calculateCapacityDashboard(startTime,endTime,selDept,allprojectslist);
+    let capDashres = await calculateCapacityDashboard(startTime,endTime,selDept,projectStatus,allprojectslist);
     const result = {
       status: 200,
       message: 'success',
@@ -555,9 +556,11 @@ const getsample = async (req,res)=>{
   console.log(":::::::::::::::get method called [sample test] :::::::::");
   res.json({ status:'ok',message:'api called here for get sample syed' });
 }
+
 // const checkNgetallusers = async (req,res)=>{
-//   let reqData = req.body;
+//   let {securityEmail,securityPassword} = req.body;
 //   try {
+    
     
 //   } catch (error) {
     
